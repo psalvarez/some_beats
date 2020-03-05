@@ -64,7 +64,46 @@ var tempoclock = TempoClock(100/60);
 )
 
 
-/*More sequences*/
+/*Same synth as Ndef (for live coding)*/
+(
+a = Ndef(\kickr, { arg freq = 500, pitch_d = 0.05, decay = 2, noise_d = 0.02, noise_amp = 0.05;
+    var main_osc, noise_osc, pitch_mod1, pitch_mod2, amp_mod, noise_mod, total, trigger;
+
+	//Trigger function
+	trigger = Impulse.kr(1);
+
+    //Envelopes
+    pitch_mod1 = EnvGen.kr(
+        Env.perc(attackTime: 0, releaseTime: pitch_d),
+		gate: trigger
+    );
+
+
+    amp_mod = EnvGen.kr(
+        Env.perc(attackTime: 0, releaseTime: decay),
+		gate: trigger,
+		// In this case, doneAction: 2 triggers a new synth every time we hit play
+		// doneAction: 2
+    );
+
+    noise_mod = EnvGen.kr(
+        Env.perc(attackTime: 0, releaseTime: noise_d),
+		gate: trigger
+    );
+
+    //Oscillators
+	main_osc = SinOsc.ar(freq: (freq * pitch_mod1)!2, mul: 0.5 * amp_mod);
+    noise_osc = PinkNoise.ar(mul: noise_mod * noise_amp);
+
+    //Output
+    // total = main_osc + noise_osc;
+    // total = Mix.new([main_osc, noise_osc]);
+    total = main_osc + noise_osc;
+    // Out.ar([0,1], total)
+}
+).play
+)
+
 
 /*GUI Code*/
 
