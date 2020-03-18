@@ -2,7 +2,7 @@
 /*Here's the synth*/
 (
 a = SynthDef(\kickr, { arg freq = 500, pitch_d = 0.05, decay = 2, noise_d = 0.02, noise_amp = 0.05;
-    var main_osc, noise_osc, pitch_mod1, pitch_mod2, amp_mod, noise_mod, total;
+    var main_osc, noise_osc, pitch_mod1, pitch_mod2, amp_mod, noise_mod, macro_amp, total;
     var points, glitch_env, trigger;
 
     points = Array2D.fromArray(2,2,[100, 10000, 0.01, 1]);
@@ -30,13 +30,17 @@ a = SynthDef(\kickr, { arg freq = 500, pitch_d = 0.05, decay = 2, noise_d = 0.02
     );
 
     glitch_env = EnvGen.kr(
-        Env(levels:[1, 1000], times: [2]),
+        Env(levels:[1, 1000], times: [decay]),
+        // doneAction: 2
+    );
+
+    macro_amp = EnvGen.kr(
+        Env.perc(releaseTime: decay / 4),
         doneAction: 2
     );
 
-
     //Oscillators
-    main_osc = SinOsc.ar(freq: glitch_env * freq * pitch_mod1, mul: 0.5 * amp_mod);
+    main_osc = SinOsc.ar(freq: glitch_env * freq * pitch_mod1, mul: 0.5 * amp_mod * macro_amp);
     noise_osc = PinkNoise.ar(mul: noise_mod * noise_amp);
 
     //Output
