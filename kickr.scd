@@ -1,4 +1,3 @@
-
 /*Here's the synth*/
 (
 a = SynthDef(\kickr, { arg freq = 500, pitch_d = 0.05, decay = 2, noise_d = 0.02, noise_amp = 0.05;
@@ -120,13 +119,13 @@ b = Button(w, Rect(200, 4, 170, 170))
 .states_([["Kick it", Color.black]])
         .action_({ arg butt;
             butt.value.postln;
-    // Synth(\kickr, [\freq,100+(10000*slid2d.y),\pitch_d, 0.01+(0.09*slid2d.x)]);  //I'm doing my own linear mapping here rather than use a ControlSpec
+    Synth(\kickr, [\freq,100+(10000*slid2d.y),\pitch_d, 0.01+(0.09*slid2d.x)]);  //I'm doing my own linear mapping here rather than use a ControlSpec
         });
 
 slid2d.action_({
 
 	[slid2d.x, slid2d.y].postln;
-    Synth(\kickr, [\freq,100+(10000*slid2d.y),\pitch_d, 0.01+(0.09*slid2d.x)]);
+    // Synth(\kickr, [\freq,100+(10000*slid2d.y),\pitch_d, 0.01+(0.09*slid2d.x)]);
 
 
 });
@@ -138,5 +137,3 @@ w.front;
 //w.onClose={;};	//action which stops running synth when the window close button is pressed
 
 )
-
-
