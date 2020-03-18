@@ -1,7 +1,7 @@
 
 /*Here's the synth*/
 (
-a = SynthDef(\kickr, { arg freq = 500, pitch_d = 0.05, decay = 2, noise_d = 0.02, noise_amp = 0.05;
+a = SynthDef(\queaker, { arg freq = 500, pitch_d = 0.05, decay = 2, noise_d = 0.02, noise_amp = 0.05;
     var main_osc, noise_osc, pitch_mod1, pitch_mod2, amp_mod, noise_mod, macro_amp, total;
     var points, glitch_env, trigger;
 
@@ -89,10 +89,6 @@ w.front;
 
 )
 
-a = Synth(\kickr, [freq: 500, pitch_d: 3, decay: 5, noise_d: 4, noise_amp: 0.8])
-a = Synth(\kickr, [freq: 100, pitch_d: 0.1, decay: 3, noise_d: 0.1, noise_amp: 0.8])
-
-
 /*A little test*/
 //Acid dancehall
 (
@@ -101,68 +97,20 @@ var tempoclock = TempoClock(100/60);
     var nu_freq, nu_decay;
     inf.do{
         2.do{
-            Synth(\kickr, [freq: 300, decay: 4, pitch_d: 0.1]);
+            Synth(\queaker, [freq: 300, decay: 4, pitch_d: 0.1]);
             0.25.wait;
             nu_freq = rrand(5000, 10000);
             2.do{
                 nu_decay = rrand(0.001, 0.5);
-                Synth(\kickr, [freq: nu_freq, decay: nu_decay]);
+                Synth(\queaker, [freq: nu_freq, decay: nu_decay]);
                 0.25.wait;
             };
         };
-        Synth(\kickr, [freq: 900]);
+        Synth(\queaker, [freq: 900]);
         0.25.wait;
         nu_decay = rrand(0.001, 0.5);
-        Synth(\kickr, [freq: nu_freq, decay: nu_decay]);
+        Synth(\queaker, [freq: nu_freq, decay: nu_decay]);
         0.25.wait;
     }
 }.fork(tempoclock)
 )
-
-/*Same synth as Ndef (for live coding)*/
-(
-a = Ndef(\kickr, { arg freq = 500, pitch_d = 0.05, decay = 2, noise_d = 0.02, noise_amp = 0.05;
-    var main_osc, noise_osc, pitch_mod1, pitch_mod2, amp_mod, noise_mod, total, trigger;
-
-    var glitch_env;
-
-	//Trigger function
-	trigger = Impulse.kr(30);
-
-    //Envelopes
-    pitch_mod1 = EnvGen.kr(
-        Env.perc(attackTime: 0, releaseTime: pitch_d),
-		gate: trigger
-    );
-
-    amp_mod = EnvGen.kr(
-        Env.perc(attackTime: 0, releaseTime: decay),
-		gate: trigger,
-		// In this case, doneAction: 2 triggers a new synth every time we hit play
-		// doneAction: 2
-    );
-
-    noise_mod = EnvGen.kr(
-        Env.perc(attackTime: 0, releaseTime: noise_d),
-		gate: trigger
-    );
-
-    glitch_env = EnvGen.kr(
-        Env([1, 10000], 1),
-        doneAction: 2
-    );
-
-    //Oscillators
-	main_osc = SinOsc.ar(freq: (glitch_env * freq * pitch_mod1)!2, mul: 0.5 * amp_mod);
-    noise_osc = PinkNoise.ar(mul: noise_mod * noise_amp);
-
-    //Output
-    // total = main_osc + noise_osc;
-    // total = Mix.new([main_osc, noise_osc]);
-    total = main_osc + noise_osc;
-    // Out.ar([0,1], total)
-}
-).play
-)
-
-
